@@ -1,0 +1,91 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"languageName":"csharp","name":"csharp"}]}}
+
+#!csharp
+
+#r "nuget: LanguageExt.Core, 4.4.3"
+
+#!csharp
+
+using LanguageExt;
+using static LanguageExt.Prelude;
+
+#!markdown
+
+### Sometimes we want to know why a computation failed. That's where Either comes into picture.
+
+#!csharp
+
+Either<string, int> Divide(int x, int y) =>
+    y == 0
+        ? Left("Cannot divide by zero")
+        : Right(x / y);
+
+#!csharp
+
+var eitherLeft = Divide(10, 0);
+Console.WriteLine($"eitherLeft: {eitherLeft}");
+
+var eitherRight = Divide(10, 5);
+Console.WriteLine($"eitherRight: {eitherRight}");
+
+#!markdown
+
+### If you are fine with another Either value -
+
+#!csharp
+
+var eitherAnotherRight = eitherRight.Map(r => r + 10);
+Console.WriteLine($"eitherAnotherRight: {eitherAnotherRight}");
+
+#!markdown
+
+### But if a concrete value is needed -
+
+#!csharp
+
+var right = match(eitherRight,
+    Left: error => 0,
+    Right: r => r * 2);
+Console.WriteLine($"right: {right}");
+
+#!markdown
+
+### Combining Eithers
+
+#!csharp
+
+Either<string, int> two = Right(2);
+Either<string, int> four = Right(4);
+Either<string, int> six = Right(6);
+Either<string, int> error = Left("error");
+
+#!markdown
+
+#### We get a value because every either value is a right
+
+#!csharp
+
+int r = match( from x in two
+               from y in four
+               from z in six
+               select x + y + z,
+               Right: v => v * 2,
+               Left: error => 0 );
+Console.WriteLine($"r: {r}");
+
+#!markdown
+
+#### We don't get a value because one of the either values is a left
+
+#!csharp
+
+int r0 = match( from x in two
+                from y in four
+                from _ in error
+                from z in six
+                select x + y + z,
+                Right: v => v * 2,
+                Left: error => 0 );
+Console.WriteLine($"r0: {r0}");

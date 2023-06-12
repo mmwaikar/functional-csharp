@@ -13,7 +13,7 @@ using static LanguageExt.Prelude;
 
 #!markdown
 
-Sometimes we need to model the absence of a value. That's where the Option type comes into picture.
+### Sometimes we need to model the absence of a value. That's where the Option type comes into picture.
 
 #!csharp
 
@@ -28,7 +28,7 @@ var persons = new List<Person> {p1, p2, p3};
 
 #!markdown
 
-What if we try to find a person which does not exist? And no, checking for `null` is not an option.
+### What if we try to find a person which does not exist? **And no, checking for** `null` **is not an option**.
 
 #!csharp
 
@@ -45,3 +45,63 @@ Console.WriteLine($"maybeFound is some? {maybeFound.IsSome}");
 
 Console.WriteLine($"maybeNotFound is none? {maybeNotFound.IsNone}");
 Console.WriteLine($"maybeNotFound is some? {maybeNotFound.IsSome}");
+
+#!markdown
+
+### If you are fine with another Optional value -
+
+#!csharp
+
+var maybeIncreasedAge = maybeFound.Map(p => p.Age + 10);
+Console.WriteLine($"maybeIncreasedAge: {maybeIncreasedAge}");
+
+#!markdown
+
+### But if a concrete value is needed -
+
+#!csharp
+
+var increasedAge = match(maybeIncreasedAge,
+    Some: age => age + 10,
+    None: () => 0);
+Console.WriteLine($"increasedAge: {increasedAge}");
+
+#!markdown
+
+### Combining options
+
+#!csharp
+
+Option<int> two = Some(2);
+Option<int> four = Some(4);
+Option<int> six = Some(6);
+Option<int> none = None;
+
+#!markdown
+
+#### We get a value because every optional value is present
+
+#!csharp
+
+int r = match( from x in two
+               from y in four
+               from z in six
+               select x + y + z,
+               Some: v => v * 2,
+               None: () => 0 );
+Console.WriteLine($"r: {r}");
+
+#!markdown
+
+#### We don't get a value because one of the optional values is absent
+
+#!csharp
+
+int r0 = match( from x in two
+                from y in four
+                from _ in none
+                from z in six
+                select x + y + z,
+                Some: v => v * 2,
+                None: () => 0 );
+Console.WriteLine($"r0: {r0}");
