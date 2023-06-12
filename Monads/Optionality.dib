@@ -1,0 +1,47 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"languageName":"csharp","name":"csharp"}]}}
+
+#!csharp
+
+#r "nuget: LanguageExt.Core, 4.4.3"
+
+#!csharp
+
+using LanguageExt;
+using static LanguageExt.Prelude;
+
+#!markdown
+
+Sometimes we need to model the absence of a value. That's where the Option type comes into picture.
+
+#!csharp
+
+public record Person(string FirstName, string LastName, int Age);
+
+#!csharp
+
+var p1 = new Person("John", "Smith", 21);
+var p2 = new Person("Josh", "Aguilera", 22);
+var p3 = new Person("Johnny", "Cash", 23);
+var persons = new List<Person> {p1, p2, p3};
+
+#!markdown
+
+What if we try to find a person which does not exist? And no, checking for `null` is not an option.
+
+#!csharp
+
+var doesExist = persons.Find(p => p.FirstName == "Josh");
+var maybeFound = Optional(doesExist);
+
+var doesNotExist = persons.Find(p => p.FirstName == "Jobs");
+var maybeNotFound = Optional(doesNotExist);
+
+#!csharp
+
+Console.WriteLine($"maybeFound is none? {maybeFound.IsNone}");
+Console.WriteLine($"maybeFound is some? {maybeFound.IsSome}");
+
+Console.WriteLine($"maybeNotFound is none? {maybeNotFound.IsNone}");
+Console.WriteLine($"maybeNotFound is some? {maybeNotFound.IsSome}");
