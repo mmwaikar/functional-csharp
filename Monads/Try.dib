@@ -41,16 +41,19 @@ Console.WriteLine($"errorTryDiv: {errorTryDiv.ToEither()}");
 
 #!markdown
 
-But what if some piece of code (which might throw exceptions) is not under our control? Again, wrap it in a Try() function.
+### If you are fine with another Try value -
 
 #!csharp
 
-var nonExistentFileName = "non-existent-file.txt";
-var tryText = Try(() => File.ReadAllText(nonExistentFileName));
+var doubleTryDiv = tryDiv.Map(v => v * 2);
+Console.WriteLine($"doubleTryDiv: {doubleTryDiv.ToOption()}");
 
-#!csharp
+var noDoubleErrorTryDiv = errorTryDiv.Map(v => v * 2);
+Console.WriteLine($"noDoubleErrorTryDiv: {noDoubleErrorTryDiv.ToOption()}");
 
-Console.WriteLine($"tryText: {tryText}");
+#!markdown
+
+### But if a concrete value is needed -
 
 #!csharp
 
@@ -58,3 +61,52 @@ var res = match( tryText,
                  Succ: contents => contents,
                  Fail: ex => $"Error: {ex.Message}" );
 Console.WriteLine($"res: {res}");
+
+#!markdown
+
+### But what if some piece of code (which might throw exceptions) is not under our control? Again, wrap it in a Try() function.
+
+#!csharp
+
+var nonExistentFileName = "non-existent-file.txt";
+var tryText = Try(() => File.ReadAllText(nonExistentFileName));
+
+#!markdown
+
+### Combining try(s)
+
+#!csharp
+
+var two = Try(() => int.Parse("2"));
+var four = Try(() => int.Parse("4"));
+var six = Try(() => int.Parse("6"));
+var error = Try(() => int.Parse("a"));
+
+#!markdown
+
+#### We get a value because every try value is a success
+
+#!csharp
+
+int r = match( from x in two
+               from y in four
+               from z in six
+               select x + y + z,
+               Succ: v => v * 2,
+               Fail: ex => 0 );
+Console.WriteLine($"r: {r}");
+
+#!markdown
+
+#### We don't get a value because one of the try values is a failure
+
+#!csharp
+
+int r0 = match( from x in two
+                from y in four
+                from _ in error
+                from z in six
+                select x + y + z,
+                Succ: v => v * 2,
+                Fail: ex => 0 );
+Console.WriteLine($"r0: {r0}");
