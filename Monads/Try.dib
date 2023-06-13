@@ -1,0 +1,60 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"languageName":"csharp","name":"csharp"}]}}
+
+#!csharp
+
+#r "nuget: LanguageExt.Core, 4.4.3"
+
+#!csharp
+
+using LanguageExt;
+using static LanguageExt.Prelude;
+
+using System.IO;
+
+#!markdown
+
+### Sometimes we want to model a computation that might throw exceptions. That's where Try comes into picture.
+
+#!markdown
+
+You can wrap the exception throwing code in a Try() function.
+
+#!csharp
+
+public Try<int> TryDivide(int nr, int dr) {
+    return Try(() => nr / dr);
+}
+
+#!markdown
+
+And you can convert a Try into an Option or Either (as shown below).
+
+#!csharp
+
+var tryDiv = TryDivide(4 ,2);
+Console.WriteLine($"tryDiv: {tryDiv.ToOption()}");
+
+var errorTryDiv = TryDivide(4 ,0);
+Console.WriteLine($"errorTryDiv: {errorTryDiv.ToEither()}");
+
+#!markdown
+
+But what if some piece of code (which might throw exceptions) is not under our control? Again, wrap it in a Try() function.
+
+#!csharp
+
+var nonExistentFileName = "non-existent-file.txt";
+var tryText = Try(() => File.ReadAllText(nonExistentFileName));
+
+#!csharp
+
+Console.WriteLine($"tryText: {tryText}");
+
+#!csharp
+
+var res = match( tryText,
+                 Succ: contents => contents,
+                 Fail: ex => $"Error: {ex.Message}" );
+Console.WriteLine($"res: {res}");
