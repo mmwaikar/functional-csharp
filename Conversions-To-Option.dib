@@ -44,4 +44,32 @@ Console.WriteLine($"inotFound5: {inotFound5}");
 #!csharp
 
 Option<string> noneStr = None;
+Option<int> noneInt = None;
 Console.WriteLine($"noneStr: {noneStr}");
+Console.WriteLine($"noneInt: {noneInt}");
+
+#!csharp
+
+var arr = new [] { 2, 5, 10 };
+var success = Try(() => arr);
+var failure = Try(() => {
+    throw new ArgumentNullException("no arg");
+    return arr;
+});
+
+#!csharp
+
+public Option<int> Find(Try<int[]> tries)
+{
+    return tries
+        .Succ(intArr => Optional(intArr.FirstOrDefault(i => i == 5)))
+        .Fail(ex => None);
+}
+
+#!csharp
+
+var maybeFound = Find(success);
+var maybeNotFound = Find(failure);
+
+Console.WriteLine($"maybeFound: {maybeFound}");
+Console.WriteLine($"maybeNotFound: {maybeNotFound}");
