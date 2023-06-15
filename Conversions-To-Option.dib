@@ -1,0 +1,47 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"languageName":"csharp","name":"csharp"}]}}
+
+#!csharp
+
+#r "nuget: LanguageExt.Core, 4.4.3"
+
+#!csharp
+
+using LanguageExt;
+using static LanguageExt.Prelude;
+
+#!csharp
+
+public record Emp(int id, string name);
+
+#!csharp
+
+var e1 = new Emp(1, "RF");
+var e2 = new Emp(2, "ND");
+var e3 = new Emp(3, "RN");
+var e4 = new Emp(4, "AR");
+var emps = new List<Emp> {e1, e2, e3, e4};
+
+#!csharp
+
+// explicit conversion to an Option<>
+var found4 = Optional(emps.FirstOrDefault(x => x.id == 4));
+var notFound5 = Optional(emps.FirstOrDefault(x => x.id == 5));
+
+Console.WriteLine($"found4: {found4}");
+Console.WriteLine($"notFound5: {notFound5}");
+
+#!csharp
+
+// implicit conversion to an Option<>
+Option<Emp> ifound4 = emps.FirstOrDefault(x => x.id == 4);
+Option<Emp> inotFound5 = emps.FirstOrDefault(x => x.id == 5);
+
+Console.WriteLine($"ifound4: {ifound4}");
+Console.WriteLine($"inotFound5: {inotFound5}");
+
+#!csharp
+
+Option<string> noneStr = None;
+Console.WriteLine($"noneStr: {noneStr}");
